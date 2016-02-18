@@ -9,19 +9,18 @@ void setup() {
   ledTimer = millis();
   pinMode(ledPin, OUTPUT);
   //set LED to OUTPUT
-
 }
 
 void loop() {
- if(millis()-ledTimer >= interval){
+  if(millis()-ledTimer >= interval){
  //save most recent blink
-  if (digitalRead(ledPin) == HIGH){
-    digitalWrite(ledPin, LOW);
+    if (digitalRead(ledPin) == HIGH){
+      digitalWrite(ledPin, LOW);
     //if LED is on, turn it off
-  }
-  else{
+    }else{
     digitalWrite(ledPin, HIGH);
     //turn on LED
-  }(ledTimer += interval); // add requested time interval
+    }
+  (ledTimer += interval); // add requested time interval
   }
-  }
+}
