@@ -20,15 +20,13 @@ void setup(){
 }
 
 void loop(){
-  Serial.print(sensorTransferFunc(sensorRead()));
+  Serial.print(sensorTransferFunc(updateAvg(sensorRead())));
   Serial.println(" cm");
   delay(measureDelay);
 }
 
 int sensorRead(){
-  
-  
-  
+  return analogRead(sensorPin);
 }
 
 double sensorTransferFunc(int adcValue){ //ADC -> voltage -> distance conversion
@@ -45,7 +43,7 @@ double sensorTransferFunc(int adcValue){ //ADC -> voltage -> distance conversion
   double invDist = (voltage*slope)+offset;
   return 1/invDist;
   }
-  return input;
+  return voltage;
 }
 
 int updateAvg(int value){ //update the values in the moving avg function and return the new avg.
