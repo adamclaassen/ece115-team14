@@ -14,7 +14,7 @@ int avgArr[avgN] = {};
 
 void setup(){
   Serial.begin(9600);
-  for(int i = 0; i<avgN; i++){
+  for(int i = 0; i<avgN; i++){ //initialize array as 0's
     avgArr[i] = 0;
   }
 }
@@ -25,7 +25,7 @@ void loop(){
   delay(measureDelay);
 }
 
-int sensorRead(){
+int sensorRead(){ //read sensor, convt to voltage, check if out of sensor ragnge.
   double adcConst = 0.00459; //4.7v/1024 divisions
   double voltage = adcConst*analogRead(A0);
   if(voltage<1.4){voltage=-1;}//out of range under
@@ -42,7 +42,7 @@ double sensorTransferFunc(double input){ //voltage -> distance conversion
   return input;
 }
 
-int updateAvg(int value){
+int updateAvg(int value){ //update the values in the moving avg function and return the new avg.
   int sum = 0;
   for(int i = avgN-1; i > 0; i--){
     avgArr[i] = avgArr[i-1];
