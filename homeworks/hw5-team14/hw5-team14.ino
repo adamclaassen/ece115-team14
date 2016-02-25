@@ -1,17 +1,22 @@
 /*
- * Team 14 Homework 4
+ * Team 14 Homework 5
  * Adam Becker
  * Adam Claassen
  * Tianchin Fu
  * Luke Hurtig
  */
 
-int sensorPin = A0;
-int measureDelay = 20;
+byte sensorPin = A0;
+byte measureDelay = 20;
+byte avgN = 10;
+int avgArr[avgN] = {};
 
 
 void setup(){
   Serial.begin(9600);
+  for(int i = 0; i<avgN; i++){
+    avgArr[i] = 0;
+  }
 }
 
 void loop(){
@@ -36,3 +41,16 @@ double sensorTransferFunc(double input){ //voltage -> distance conversion
   }
   return input;
 }
+
+int updateAvg(int value){
+  int sum = 0;
+  for(int i = avgN-1; i > 0; i--){
+    avgArr[i] = avgArr[i-1];
+  }
+  avgArr[0] = value;
+  for(int k = 0; k<avgN; k++){
+    sum += avgArr[k];
+  }
+  return sum/avgN;
+}
+
