@@ -8,7 +8,7 @@
 
 byte sensorPin = A0;
 byte measureDelay = 20;
-byte avgN = 10;
+const byte avgN = 10;
 int avgArr[avgN] = {};
 
 
