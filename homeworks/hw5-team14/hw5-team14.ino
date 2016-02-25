@@ -26,17 +26,19 @@ void loop(){
 }
 
 int sensorRead(){ //read sensor, convt to voltage, check if out of sensor ragnge.
-  double adcConst = 0.00459; //4.7v/1024 divisions
-  double voltage = adcConst*analogRead(A0);
+  
+  
   if(voltage<1.4){voltage=-1;}//out of range under
   if(voltage>2.5){voltage=-2;}// out of range over
 }
 
-double sensorTransferFunc(double input){ //voltage -> distance conversion
+double sensorTransferFunc(int adcValue){ //ADC -> voltage -> distance conversion
+  double adcConst = 0.00459; //4.7v/1024 divisions
+  double voltage = adcConst*adcValue;
   if(!input<0){
   double slope = 0.0072727272; //calculated from sensor datasheet V vs. 1/L graph
   double offset = -0.00818181; //calculated from sensor datasheet V vs. 1/L graph
-  double invDist = (input*slope)+offset;
+  double invDist = (voltage*slope)+offset;
   return 1/invDist;
   }
   return input;
