@@ -1,14 +1,22 @@
 /*
+ * File: hw5-team14.ino
+ * 
  * Team 14 Homework 5
  * Adam Becker
  * Adam Claassen
  * Tianchin Fu
  * Luke Hurtig
+ * 
+ * Program version 0.8.5
+ * Due 2016-03-01
+ * 
+ * This program uses a moving average to smooth the input from the infrared ranging sensor, hopefully removing most glitches and insignificant data. 
+ * It also converts the averaged value to a distance before printing it over the serial port (untested/alpha feature).
  */
 
-byte sensorPin = A0;
-byte measureDelay = 20;
-const byte avgN = 10;
+int sensorPin = A0;
+int measureDelay = 20;
+const int avgN = 10;
 int avgArr[avgN] = {};
 
 
