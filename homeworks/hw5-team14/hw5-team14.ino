@@ -37,7 +37,7 @@ double sensorTransferFunc(int adcValue){ //ADC -> voltage -> distance conversion
   if(voltage>2.5){voltage=-2;}// out of range over
   
   //transfer function
-  if(!input<0){
+  if(!voltage<0){
   double slope = 0.0072727272; //calculated from sensor datasheet V vs. 1/L graph
   double offset = -0.00818181; //calculated from sensor datasheet V vs. 1/L graph
   double invDist = (voltage*slope)+offset;
