@@ -1,0 +1,147 @@
+//This should be a decent start. I implemented a state function with 3 states (Throttle, Brake, Reverse). 
+//In theory, this code should actually work just fine
+
+//BASIC VARIABLES:
+#include <math.h>
+int sensorPin = A0;
+int measureDelay = 20;
+const int avgN = 10;
+int avgArr[avgN] = {};
+unsigned long Timer;
+int StopState;
+ 
+// Pin Variables:
+int FwdPin = 10;
+int RevPin = 11;
+int BrkPin = 12;
+int LEDpin = 13;
+
+//3 Main functions for each state:
+
+//code for brake function:
+void brakes(){
+  digitalWrite(FwdPin, HIGH);
+  digitalWrite(RevPin, HIGH);
+  delay(5);
+  digitalWrite(BrkPin, HIGH);
+}
+// code for throttle function:
+void throttle(){
+  digitalWrite(BrkPin, LOW);
+  delay(5);
+  digitalWrite(FwdPin, LOW);
+  digitalWrite(RevPin, LOW);  
+}
+//coide for reverse function:
+void reverse(){
+  digitalWrite(BrkPin, LOW);
+  delay(5);
+  digitalWrite(RevPin, LOW);
+}
+//END OF BRAKE STATES
+
+//STATE FUNCTION FOR CAS:
+enum CasStates{Throttle, Brake, Reverse};
+CasStates state = Throttle;
+int CAS(){
+  switch(state){
+    case Throttle:
+    if(StopState == 1 ){
+      brakes();
+      digitalWrite(LEDpin, HIGH);
+      delay(50);
+      digitalWrite(LEDpin, LOW);      
+      state = Brake;
+    }
+    else
+    {
+      throttle();
+    }
+    break;
+  case Brake:
+  if( Timer - millis() >= 10){
+    reverse();
+    Timer = millis();
+    digitalWrite(LEDpin, HIGH);
+    delay(50);
+    digitalWrite(LEDpin, LOW);
+    state = Reverse;
+    }
+    break;
+  case Reverse:
+  if(StopState = 0){
+    throttle();    
+    digitalWrite(LEDpin, HIGH);
+    delay(50);
+    digitalWrite(LEDpin, LOW);
+    state = Throttle;
+  }
+  else{
+    reverse();
+  }
+  break;
+  }
+}
+//END OF CAS STATE FUNCTION
+
+ void setup(){
+  
+  Serial.begin(9600);
+  Timer = millis();
+   for(int i = 0; i<avgN; i++){ //initialize array as 0's
+     avgArr[i] = 0;
+   }
+ }
+ 
+//BELOW: Main Code for CAS:
+ void loop(){ 
+  CAS();
+   Serial.print(sensorTransferFunc(updateAvg(sensorRead())));
+   Serial.println(" cm");
+   delay(measureDelay);
+ }
+ //END of loop
+ 
+//Code for Filter and Transfer Function:
+ int sensorRead(){
+   return analogRead(sensorPin);
+ }
+
+ double sensorTransferFunc(int adcValue){ //ADC -> voltage -> distance conversion
+   //ADC -> voltage conversion
+   double adcConst = 0.00459; //4.7v/1024 divisions
+   double voltage = adcConst*adcValue;
+   /*if(voltage>2.5){
+    StopState = 1;
+    }
+    //out of range under*/
+   if(voltage<1.4){
+    voltage=-2;
+    StopState = 1; //if within threshold, save state
+    }
+    else{
+      StopState = 0; //if out of threshold, ignore
+    }
+    // out of range over
+
+   //transfer function
+   if(voltage>0){
+    double dist = .001677489 + 1.470614*(voltage)-.2365341*pow(voltage, 2)+.01529924*pow(voltage, 3) -.0004465152*pow(voltage, 4) +.0000048667*pow(voltage, 5);
+    // transfer function that I calculated; should be exact
+    return dist;
+   }
+   return voltage;
+ }
+
+ int updateAvg(int value){ //update the values in the moving avg function and return the new avg.
+   int sum = 0;
+   for(int i = avgN-1; i > 0; i--){
+     avgArr[i] = avgArr[i-1];
+   }
+   avgArr[0] = value;
+   for(int k = 0; k<avgN; k++){
+     sum += avgArr[k];
+   }
+   return sum/avgN;
+ }
+ //END OF FILTER AND TRANSFER FUNCTION
